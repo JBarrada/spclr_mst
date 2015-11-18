@@ -1,10 +1,11 @@
 #include <ahci.h>
+#include <ahci_structs.h>
+#include <os.h>
 #include <pit.h>
 #include <io.h>
 #include <stdint.h>
-
+#include <stdbool.h>
 #include <ata.h>
-#include <sf.h>
 
 int ata_command(HBA_PORT *port, uint8_t *regs, uint8_t *buf, uint32_t buf_len, uint8_t direction) {
 	port->is = (uint32_t)-1;
@@ -174,33 +175,6 @@ int reset_port(HBA_PORT *port) {
 }
 
 
-void probe_ahci(uint32_t ABAR) {
-	HBA_MEM *ahci_dev = (HBA_MEM*)ABAR;
-	
-	int port;
-	for (port=0;port<32;port++) {		
-		if (ahci_dev->pi & (1<<port)) {
-			uint8_t ssts_ipm = (ahci_dev->ports[port].ssts >> 8) & 0x0F;
-			uint8_t	ssts_det = ahci_dev->ports[port].ssts & 0x0F;
-			
-			if (ssts_ipm && ssts_det) {
-				// make sure port started
-				if (!(ahci_dev->ports[port].cmd & HBA_PxCMD_ST)) {
-					ahci_dev->ports[port].cmd |= (HBA_PxCMD_ST|HBA_PxCMD_FRE);
-				}
-				// clear status
-				ahci_dev->ports[port].serr = ahci_dev->ports[port].serr;
-				ahci_dev->ports[port].is = ahci_dev->ports[port].is;
-				ahci_dev->ports[port].cmd |= HBA_PxCMD_ST;
-				
-				IDENTIFY_DEVICE_DATA id;
-				identify_device(&ahci_dev->ports[port], &id);
-			}
-		}
-	}
-}
-
-
 int probe_ahci2(AHCI_DEV_UI *ahci_dev) {
 	HBA_MEM *ahci_mem = (HBA_MEM*)ahci_dev->ABAR;
 	
@@ -231,3 +205,21 @@ int probe_ahci2(AHCI_DEV_UI *ahci_dev) {
 	return current_drive;
 }
 
+void refresh_hba(OS_HBA *self) {
+	int port;
+	for (port=0;port<32;port++) {		
+		if (self->mem->pi & (1<<port)) {
+			uint8_t ssts_ipm = (self->mem->ports[port].ssts >> 8) & 0x0F;
+			uint8_t	ssts_det = (self->mem->ports[port].ssts >> 0) & 0x0F;
+			
+			if (ssts_ipm && ssts_det) {
+				self->mem->ports[port].cmd |= HBA_PxCMD_ST;
+				
+				self->drives[port].port_num = port;
+				self->drives[port].port = &self->mem->ports[port];
+				self->drives[port].refresh_identify = refresh_identify;
+				self->drives[port].is_active = true;
+			}
+		}
+	}
+}

@@ -1,3 +1,6 @@
+#define KERNEL
+
+#include <os.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -33,6 +36,8 @@ void kernel_main() {
 	pci_init();
 	
 	asm("sti");
+	
+	pci_probe();
 	
 	main_menu_loop();
 

@@ -1,4 +1,6 @@
 #include <ata.h>
+#include <ata_structs.h>
+#include <os.h>
 #include <stdint.h>
 #include <ahci.h>
 #include <io.h>
@@ -43,6 +45,10 @@ int identify_device(HBA_PORT *port, IDENTIFY_DEVICE_DATA *id) {
 	return 0;
 }
 
+void refresh_identify(OS_DRIVE *self) {
+	identify_device(self->port, &self->id);
+}
+
 int smart_read_data(HBA_PORT *port, SMART_DATA *sd) {
 	uint8_t regs[8] = {0xd0, 0x00, 0x00, 0x4f, 0xc2, 0x00, 0xb0, 0x00};
 	uint8_t buf[512];
@@ -52,7 +58,7 @@ int smart_read_data(HBA_PORT *port, SMART_DATA *sd) {
 		
 		sd->self_test_short_poll = (uint16_t)buf[372];
 		sd->self_test_ext_poll = (buf[373]==0xff)?(((uint16_t)buf[376]<<8)|buf[375]):buf[373];
-		return 1
+		return 1;
 	}
 	return 0;
 }
@@ -88,7 +94,7 @@ int smart_disable_operations(HBA_PORT *port) {
 int smart_return_status(HBA_PORT *port, uint8_t log_page) {
 	uint8_t regs[8] = {0xda, 0x00, log_page, 0x4f, 0xc2, 0x00, 0xb0, 0x00};
 	uint8_t buf[512];
-	return ata_command(port, regs, buf, count, WRITE_TO_DEV);
+	return ata_command(port, regs, buf, 512, WRITE_TO_DEV);
 }
 
 
@@ -132,7 +138,3 @@ int security_disable_password(HBA_PORT *port, uint8_t compare_master, uint8_t *p
 	memcpy(buf+2, password, 32);
 	return ata_command(port, regs, buf, 512, WRITE_TO_DEV);
 }
-
-
-//sec erase unit
-//sec erase prep

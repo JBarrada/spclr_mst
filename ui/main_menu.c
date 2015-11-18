@@ -1,4 +1,5 @@
 #include <main_menu.h>
+#include <os.h>
 #include <dump_buf.h>
 #include <sf_drive_list.h>
 #include <ui.h>
@@ -21,9 +22,9 @@ void main_menu_loop() {
 		main_menu_selected = menu_page(main_menu, main_menu_items, 6, (CNTRLDISPLAY){1, 1, 0, 0 ,0}, 4, main_menu_selected);
 		
 		if (main_menu_selected == 0) {
-			DRIVE_UI selected_drive = sf_drive_list_page(0);
-			if (selected_drive.active) {
-				int result = secure_erase((HBA_PORT*)selected_drive.port);
+			OS_DRIVE* selected_drive = sf_drive_list_page(0);
+			if (selected_drive->is_active) {
+				int result = secure_erase((HBA_PORT*)selected_drive->port);
 			}
 		}
 		

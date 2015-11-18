@@ -1,5 +1,6 @@
-#include <pit.h>
 #include <pci.h>
+#include <os.h>
+#include <pit.h>
 #include <io.h>
 #include <stdint.h>
 #include <ahci.h>
@@ -38,36 +39,36 @@ uint16_t getSubClassId(uint16_t bus, uint16_t device, uint16_t function) {
         return (r0 & ~0xFF00);
 }
 
-/*
+
 void pci_probe() {
+	uint16_t hba_num = 0;
+	memset(hbas, 0, sizeof(hbas));
+	
 	for(uint32_t bus = 0; bus < 256; bus++) {
         for(uint32_t slot = 0; slot < 32; slot++) {
             for(uint32_t function = 0; function < 8; function++) {
-				uint16_t vendor = getVendorID(bus, slot, function);
-				if(vendor == 0xffff) continue;
-				uint16_t device = getDeviceID(bus, slot, function);
+				uint16_t vendorid = getVendorID(bus, slot, function);
+				uint16_t deviceid = getDeviceID(bus, slot, function);
+				if(vendorid == 0xffff) continue;
 				
 				uint8_t classid = getClassId(bus, slot, function);
 				uint8_t subclassid = getSubClassId(bus, slot, function);
 				if (classid==1 && subclassid==6) {
-					tprinth("device: 0x", device, 4);
-					tprinth(" class: 0x", classid, 2);
-					tprinth(" subclass: 0x", subclassid, 2);
-					tprint("\n");
-					
-					tprint("SERIAL ATA DEVICE FOUND (AHCI)\n");
-					uint32_t ABAR =  pci_read_word(bus,slot,function,0x24) | (pci_read_word(bus,slot,function,0x26) << 16);
-					
-					tprinth("ABAR: 0x", ABAR, 8);
-					tprint("\n");
-					
-					probe_ahci(ABAR);
+					hbas[hba_num].mem = (HBA_MEM*)((uint32_t)pci_read_word(bus,slot,function,0x24)|(pci_read_word(bus,slot,function,0x26)<<16));
+					hbas[hba_num].bus = bus;
+					hbas[hba_num].slot = slot;
+					hbas[hba_num].function = function;
+					hbas[hba_num].vendorid = vendorid;
+					hbas[hba_num].deviceid = deviceid;
+					hbas[hba_num].refresh_hba = refresh_hba;
+					hbas[hba_num].is_active = true;
+					hba_num++;
 				}
             }
         }
     }
 }
-*/
+
 
 void pci_probe_for_ahci(AHCI_DEV_UI *ahci_dev) {
 	for(uint32_t bus = 0; bus < 256; bus++) {
