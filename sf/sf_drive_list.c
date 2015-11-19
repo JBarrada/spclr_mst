@@ -14,6 +14,7 @@
 LIST sf_drive_list;
 
 void setup_sf_drive_list_container(OS_HBA *hba) {
+	/*
 	memset(&sf_drive_list, 0, sizeof(LIST));
 	sf_drive_list.size.width = 600;
 	sf_drive_list.bg = 4;
@@ -31,9 +32,11 @@ void setup_sf_drive_list_container(OS_HBA *hba) {
 	
 	sstring(sf_drive_list_header->header_texts[1].text1, "(B%d:S%d:F%d) V:%x D:%x", 
 		hba->bus, hba->slot, hba->function, hba->vendorid, hba->deviceid);
+		*/
 }
 
 void setup_sf_drive_list_item(OS_DRIVE *drive, ITEM *sf_drive_item) {
+	/*
 	sf_drive_item->size.width = 590;
 	sf_drive_item->size.height = 20;
 	sf_drive_item->selectedsize.height = 120;
@@ -65,9 +68,11 @@ void setup_sf_drive_list_item(OS_DRIVE *drive, ITEM *sf_drive_item) {
 	}
 	else 
 		sstring(sf_drive_item->body_texts[3].text2, "%s", "Not Supported");
+	*/
 }
 
 OS_DRIVE* sf_drive_list_page(unsigned int selected) {
+	/*
 	broadcast_msg("Refreshing HBAs...", 1, 0, 1+8, 3+8);
 
 	hbas[0].refresh_hba(&hbas[0]);
@@ -130,4 +135,6 @@ OS_DRIVE* sf_drive_list_page(unsigned int selected) {
 				sf_drive_list.items[i].selected = (i==selected);
 		}
 	}
+	
+	*/
 }

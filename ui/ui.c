@@ -203,7 +203,7 @@ int menu_page(MENU menu_element, char menu_items[][100], int num_items, CNTRLDIS
 		item->selectedfg = 2;
 		item->active = 1;
 		item->selected = (i==selected)?1:0;
-		setup_text(&item->header_text, menu_items[i], (POSITION){0,0}, 1, align_left);
+		setup_text(&item->header_text, menu_items[i], (POSITION){0,0}, 1, 0);
 	}
 
 	uint16_t key;
@@ -251,7 +251,7 @@ int draw_text(TEXT *text_element, uint32_t a_x, uint32_t a_y) {
 	int str1_width = get_str_width(text_element->text1);
 	int str2_width = get_str_width(text_element->text2);
 	
-	int text1_x = (text_element->align==align_right)?(WIDTH_W-text_element->pos.x-str1_width):(a_x+text_element->pos.x);
+	int text1_x = (text_element->align==1)?(WIDTH_W-text_element->pos.x-str1_width):(a_x+text_element->pos.x);
 	int text2_x = WIDTH_W-text_element->pos.x-str2_width;
 	int text_y = a_y+text_element->pos.y;
 	
@@ -269,7 +269,7 @@ int draw_text_big(TEXT *text_element, uint32_t a_x, uint32_t a_y) {
 	int str1_width = get_str_width_big(text_element->text1);
 	int str2_width = get_str_width_big(text_element->text2);
 	
-	int text1_x = (text_element->align==align_right)?(WIDTH_W-text_element->pos.x-str1_width):(a_x+text_element->pos.x);
+	int text1_x = (text_element->align==1)?(WIDTH_W-text_element->pos.x-str1_width):(a_x+text_element->pos.x);
 	int text2_x = WIDTH_W-text_element->pos.x-str2_width;
 	int text_y = a_y+text_element->pos.y;
 	
@@ -386,7 +386,7 @@ void draw_menu(MENU *menu) {
 	}
 }
 
-void setup_text(TEXT *text_element, char *text, POSITION pos, uint8_t color, enum ALIGN align) {
+void setup_text(TEXT *text_element, char *text, POSITION pos, uint8_t color, uint8_t align) {
 	text_element->pos = pos;
 	text_element->align = align;
 	text_element->is_list_item = 0;
@@ -398,7 +398,7 @@ void setup_text(TEXT *text_element, char *text, POSITION pos, uint8_t color, enu
 	text_element->active = 1;
 }
 
-void setup_text_list_item(TEXT *text_element, char *text1, char *text2, POSITION pos, uint8_t color, enum ALIGN align) {
+void setup_text_list_item(TEXT *text_element, char *text1, char *text2, POSITION pos, uint8_t color, uint8_t align) {
 	text_element->pos = pos;
 	text_element->align = align;
 	text_element->is_list_item = 1;

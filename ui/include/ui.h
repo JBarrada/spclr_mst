@@ -3,22 +3,24 @@
 
 #include <stdint.h>
 
-enum ALIGN {
-	align_left,
-	align_right,
-};
+//enum ALIGN {
+//	align_left,
+//	align_right,
+//};
+
+#include <ui2.h>
 
 typedef struct tagPOSITION {
 	unsigned int x, y;
 } POSITION;
 
-typedef struct tagSIZE {
-	unsigned int width, height;
-} SIZE;
+//typedef struct tagSIZE {
+//	unsigned int width, height;
+//} SIZE;
 
 typedef struct tagTEXT {
 	POSITION pos;
-	enum ALIGN align;
+	uint8_t align;
 	uint8_t is_list_item;
 	
 	char text1[100];
@@ -103,8 +105,8 @@ int text_prompt(char *text, char *buffer, int max_char);
 int selection_prompt(char *text, char items[][100], int num_items, int selected);
 int menu_page(MENU menu_element, char menu_items[][100], int num_items, CNTRLDISPLAY controls, uint8_t bg, unsigned int selected);
 
-void setup_text(TEXT *text_element, char *text, POSITION pos, uint8_t color, enum ALIGN align);
-void setup_text_list_item(TEXT *text_element, char *text1, char *text2, POSITION pos, uint8_t color, enum ALIGN align);
+void setup_text(TEXT *text_element, char *text, POSITION pos, uint8_t color, uint8_t align);
+void setup_text_list_item(TEXT *text_element, char *text1, char *text2, POSITION pos, uint8_t color, uint8_t align);
 void draw_list(LIST *list, uint32_t a_x, uint32_t a_y);
 void draw_menu(MENU *menu);
 
